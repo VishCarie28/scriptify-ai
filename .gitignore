@@ -1,3 +1,8 @@
-/scriptify-ai/backend/test-results
-/scriptify-ai/backend/.env
-/scriptify-ai/backend/scripts
+backend/test-results/
+backend/.env
+backend/scripts/
+
+# Ignore macOS system files
+.DS_Store
+extension/.DS_Store
+
