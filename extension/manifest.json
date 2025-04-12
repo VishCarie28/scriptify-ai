@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Scriptify AI – by Vishal Singh",
+  "version": "1.0",
+  "description": "Easily record, preview, and enhance Playwright tests with AI.",
+  "icons": {
+    "128": "icon.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["inject-panel.js"],
+      "css": ["panel.css"]
+    }
+  ],
+  "permissions": ["scripting", "activeTab", "storage"]
+}
