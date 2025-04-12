@@ -13,10 +13,7 @@ export default defineConfig({
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  reporter: [
-    ['list'],
-    ['allure-playwright'],
-  ],
+  reporter: [['list'], ['html']],
   projects: [
     {
       name: 'Chromium',
