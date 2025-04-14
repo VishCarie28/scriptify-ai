@@ -5,9 +5,9 @@
   const panel = document.createElement("div");
   panel.id = "scriptify-panel";
   panel.style.position = "fixed";
-  panel.style.top = "80px";
+  panel.style.top = "10px";
   panel.style.right = "20px";
-  panel.style.width = "360px";
+  panel.style.width = "300px";
   panel.style.backgroundColor = "#ffffff";
   panel.style.color = "#222";
   panel.style.border = "1px solid #ccc";
@@ -21,7 +21,7 @@
 
   panel.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h2 style="margin: 0; font-size: 18px; color: #00b894;">🎬 Scriptify AI by Vishal</h2>
+      <h2 style="margin: 0; font-size: 16px; color:rgb(89, 238, 208);">🎬 Scriptify AI - by Vishal</h2>
       <div style="display: flex; gap: 6px;">
         <button id="minimizeBtn" title="Minimize panel" style="border:none;background:transparent;font-size:10px;cursor:pointer;">➖</button>
         <button id="closeBtn" title="Close panel" style="border:none;background:transparent;font-size:10px;cursor:pointer;">❌</button>
@@ -30,11 +30,12 @@
 
     <div id="scriptify-body">
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="scriptify-btn" id="recordBtn" title="Start recording your actions on this page.">🎥 Start Recording</button>
-        <button class="scriptify-btn" id="stopBtn" title="Stop recording and save the script.">🛑 Stop & Save</button>
-        <button class="scriptify-btn" id="gptEnhanceBtn" title="Enhance your recorded script with GPT intelligence.">🤖 Enhance with GPT</button>
-        <button class="scriptify-btn" id="copyBtn" title="Copy the generated script to your clipboard.">📋 Copy to Clipboard</button>
-        <button class="scriptify-btn" id="downloadBtn" title="Download your script as a .js file.">⬇️ Download Script</button>
+        <button class="scriptify-btn" id="recordBtn">🎥 Start Recording</button>
+        <button class="scriptify-btn" id="stopBtn">🛑 Stop & Save</button>
+        <button class="scriptify-btn" id="gptEnhanceBtn">🤖 Enhance with GPT</button>
+        <button class="scriptify-btn" id="copyBtn">📋 Copy to Clipboard</button>
+        <button class="scriptify-btn" id="downloadBtn">⬇️ Download Script</button>
+        <button class="scriptify-btn" id="clearBtn">🧹 Clear Output</button>
       </div>
 
       <div id="scriptify-spinner" style="display: none; margin-top: 16px; text-align: center;">
@@ -48,7 +49,7 @@
         padding: 12px;
         border-radius: 8px;
         font-size: 12px;
-        max-height: 300px;
+        max-height: 200px;
         overflow-y: auto;
         white-space: pre-wrap;
         font-family: 'Fira Code', monospace;
@@ -124,7 +125,7 @@
     timerDisplay.style.color = "#e74c3c";
   }
 
-  // Draggable panel
+  // Draggable
   panel.onmousedown = function (e) {
     let offsetX = e.clientX - panel.getBoundingClientRect().left;
     let offsetY = e.clientY - panel.getBoundingClientRect().top;
@@ -143,13 +144,12 @@
     document.addEventListener("mouseup", onMouseUp);
   };
 
-  // Close Button
+  // Buttons
   document.getElementById("closeBtn").onclick = () => {
     panel.remove();
     window.scriptifyInjected = false;
   };
 
-  // Minimize toggle
   let isMinimized = false;
   const minimizeBtn = document.getElementById("minimizeBtn");
   const bodyDiv = document.getElementById("scriptify-body");
@@ -160,7 +160,6 @@
     minimizeBtn.textContent = isMinimized ? "➕" : "➖";
   };
 
-  // Button handlers
   document.getElementById("recordBtn").onclick = () => {
     const targetUrl = window.location.href;
     fetch("http://localhost:4000/codegen", {
@@ -171,13 +170,13 @@
       .then((res) => res.json())
       .then((data) => {
         document.getElementById("scriptify-output").textContent =
-          data.script || "// No script returned.";
+          data.script || "✅ Playwright Codegen launched. You can now begin recording your actions.";
         startTimer();
       })
       .catch((err) => {
         document.getElementById("scriptify-output").textContent =
-          "// Error contacting backend.";
-        console.error("Record error:", err.message || err);
+          "❌ Error contacting backend. Make sure to start the server with `node codegen-server.js`.\n\n" +
+          (err.message || err);
       });
   };
 
@@ -196,16 +195,17 @@
             .then((res) => res.text())
             .then((script) => {
               document.getElementById("scriptify-output").textContent = script;
-              alert("✅ Script saved and previewed successfully.");
               stopTimer();
             });
         } else {
-          alert("⚠️ Failed to save script.");
+          document.getElementById("scriptify-output").textContent =
+            "❌ Failed to save script.";
         }
       })
       .catch((err) => {
-        alert("❌ Error saving script.");
-        console.error("Save error:", err.message || err);
+        document.getElementById("scriptify-output").textContent =
+          "❌ Save operation failed: Recording must be initiated before saving the script.\n\n" +
+          (err.message || err);
       });
   };
 
@@ -222,12 +222,12 @@
       .then((res) => res.json())
       .then((data) => {
         document.getElementById("scriptify-output").textContent =
-          data.enhanced || "// GPT returned nothing.";
+          data.enhanced || "❌ GPT returned nothing.";
       })
       .catch((err) => {
         document.getElementById("scriptify-output").textContent =
-          "// GPT enhancement failed.";
-        console.error("Enhance error:", err.message || err);
+          "❌ GPT enhancement failed: Required script not found.\n\n" +
+          (err.message || err);
       })
       .finally(() => {
         spinner.style.display = "none";
@@ -237,7 +237,7 @@
   document.getElementById("copyBtn").onclick = () => {
     const script = document.getElementById("scriptify-output").textContent;
     navigator.clipboard.writeText(script).then(() => {
-      alert("✅ Script copied to clipboard.");
+      document.getElementById("scriptify-output").textContent += "\n\n✅ Copied to clipboard.";
     });
   };
 
@@ -252,5 +252,9 @@
     a.download = "scriptify-test.spec.js";
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  document.getElementById("clearBtn").onclick = () => {
+    document.getElementById("scriptify-output").textContent = "// Your test script will appear here...";
   };
 })();
