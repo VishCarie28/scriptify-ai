@@ -15,7 +15,7 @@
 
 ## 🚀 How It Works (Flow Overview)
 
-1. -Start Local Server Manually**
+1. **Start Local Server Manually**
    - Run the backend server to handle recording, saving, and GPT enhancement.
 
 2. **Inject Panel on Any Page**
