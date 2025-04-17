@@ -49,7 +49,7 @@
         padding: 12px;
         border-radius: 8px;
         font-size: 12px;
-        max-height: 200px;
+        max-height: 150px;
         overflow-y: auto;
         white-space: pre-wrap;
         font-family: 'Fira Code', monospace;
@@ -170,7 +170,7 @@
       .then((res) => res.json())
       .then((data) => {
         document.getElementById("scriptify-output").textContent =
-          data.script || "✅ Playwright Codegen launched. You can now begin recording your actions.";
+          data.script || "✅ Launching Playwright Codegen. You can now begin recording your actions.";
         startTimer();
       })
       .catch((err) => {

@@ -11,8 +11,8 @@ router.post("/enhance", async (req, res) => {
   }
 
   try {
-    const prompt = `Improve the following Playwright script with better test validations, assertions, and structure:\n\n${script}`;
-    let enhanced = await askGPT(prompt);
+    // Instead of a simple prompt, we directly use the script and let the askGPT function handle enhancement
+    let enhanced = await askGPT(script);
 
     // 🧽 Fully sanitize GPT response: remove any markdown-style code blocks
     enhanced = enhanced

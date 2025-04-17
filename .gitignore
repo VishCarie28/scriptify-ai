@@ -1,9 +1,9 @@
+# Backend
 backend/test-results/
 backend/.env
 backend/scripts/
+backend/playwright-report/
 
-# Ignore macOS system files
+# macOS system files
 .DS_Store
 extension/.DS_Store
-
-
