@@ -235,23 +235,30 @@
   };
 
   document.getElementById("copyBtn").onclick = () => {
-    const script = document.getElementById("scriptify-output").textContent;
-    navigator.clipboard.writeText(script).then(() => {
-      document.getElementById("scriptify-output").textContent += "\n\n✅ Copied to clipboard.";
-    });
+    const outputEl = document.getElementById("scriptify-output");
+    const script = outputEl.textContent.trim();
+
+    if (!script || script === "// Your test script will appear here...") {
+      outputEl.textContent = "⚠️ No script found to copy. Start recording a script first.";
+      return;
+    }
+
+    navigator.clipboard.writeText(script)
+      .then(() => {
+        outputEl.textContent += "\n\n✅ Copied to clipboard.";
+      })
+      .catch((err) => {
+        outputEl.textContent = `❌ Failed to copy script.\n\n${err.message || err}`;
+      });
   };
 
   document.getElementById("downloadBtn").onclick = () => {
-    const blob = new Blob(
-      [document.getElementById("scriptify-output").textContent],
-      { type: "text/plain;charset=utf-8" }
-    );
-    const url = URL.createObjectURL(blob);
+    const script = document.getElementById("scriptify-output").textContent;
+    const blob = new Blob([script], { type: "text/plain" });
     const a = document.createElement("a");
-    a.href = url;
-    a.download = "scriptify-test.spec.js";
+    a.href = URL.createObjectURL(blob);
+    a.download = "test-script.js";
     a.click();
-    URL.revokeObjectURL(url);
   };
 
   document.getElementById("clearBtn").onclick = () => {
