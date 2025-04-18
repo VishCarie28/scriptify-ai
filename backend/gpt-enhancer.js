@@ -40,10 +40,7 @@ Your task is to convert raw Playwright scripts into clean, modular, and well-str
       ],
     });
 
-    // Retrieve the generated response and clean it if necessary
     const enhancedScript = response.choices[0].message.content.trim();
-
-    // Post-process the generated script to ensure the correct Playwright syntax
     const processedScript = postProcessScript(enhancedScript);
     return processedScript;
   } catch (error) {
@@ -52,12 +49,32 @@ Your task is to convert raw Playwright scripts into clean, modular, and well-str
   }
 }
 
-// Post-process the generated script
 function postProcessScript(script) {
-  // Replace all instances of await expect(...) with the correct syntax (expect(...) without await)
+  // Extract the first page.goto(...) URL
+  const gotoRegex = /await\s+page\.goto\(['"`](.*?)['"`]\)/;
+  const match = script.match(gotoRegex);
+  const baseUrl = match ? match[1] : null;
+
+  if (baseUrl) {
+    // Remove all page.goto() calls
+    script = script.replace(new RegExp(`\\s*await\\s+page\\.goto\\(['"\`]${baseUrl}['"\`]\\);?\\s*`, "g"), "");
+
+    // Inject test.beforeEach block inside test.describe
+    script = script.replace(
+      /test\.describe\((["'`].*?["'`]),\s*\(\)\s*=>\s*{/, 
+      (fullMatch, title) => {
+        return `${fullMatch}
+  test.beforeEach(async ({ page }) => {
+    await page.goto('${baseUrl}');
+  });`;
+      }
+    );
+  }
+
+  // Fix: remove "await expect()" usage
   script = script.replace(/await expect\(([^)]+)\)/g, 'expect($1)');
 
-  // Remove extra parentheses after .toBeVisible() and .toBeHidden()
+  // Remove accidental parentheses after expect calls like: expect(locator)()
   script = script.replace(/expect\(([^)]+)\)\(\)/g, 'expect($1)');
 
   return script;
