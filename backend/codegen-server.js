@@ -82,5 +82,5 @@ app.use("/gpt", gptRoutes);
 
 // 🚀 Start server
 app.listen(PORT, () => {
-  console.log(`✅ Scriptify backend running at http://localhost:${PORT}`);
+  console.log(`✅ Scriptify AI backend running at http://localhost:${PORT}`);
 });

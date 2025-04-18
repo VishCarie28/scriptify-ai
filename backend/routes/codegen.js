@@ -5,7 +5,7 @@ const path = require("path");
 const express = require("express");
 const router = express.Router();
 
-const SCRIPT_PATH = path.join(__dirname, "..", "scripts", "scriptify-test.spec.js");
+const SCRIPT_PATH = path.join(__dirname, "..", "scripts", "recorded.spec.js");
 
 // ✅ GET /saved-script: Return the saved Playwright script
 router.get("/saved-script", (req, res) => {
