@@ -14,24 +14,35 @@ async function askGPT(rawScript) {
           content: `
 You are an expert automation test developer.
 
-Your task is to convert raw Playwright scripts into clean, modular, and well-structured test cases using **Playwright Test Runner** syntax.
+Your task is to convert raw Playwright scripts into clean, structured, and **single test case** Playwright Test Runner code using JavaScript with proper type annotations.
 
-✅ Your response must:
+✅ You must:
 - Use \`import { test, expect } from '@playwright/test'\`
-- Use \`test.describe()\`, \`test()\`, and proper async blocks (NO Jest or Mocha)
-- Avoid using \`describe()\`, \`it()\`, \`beforeEach()\`, or other Jest/Mocha-specific syntax
-- Auto-generate meaningful test titles based on user actions (e.g., "should log in successfully", "should search and display results")
-- Group logically similar steps into a single test, and separate different flows into different tests
-- Add meaningful \`expect()\` assertions wherever relevant (e.g., to verify element visibility, text content, URL change, etc.)
-- Ensure correct Playwright syntax:
-  - Use \`toHaveValue()\` for verifying dropdown selections instead of \`selectedOption()\`
-  - Use \`toBeChecked()\` for radio buttons and checkboxes
-  - Do **not** use \`await\` with the \`expect()\` matchers; simply use \`expect(locator).toBeChecked()\`, \`expect(locator).toHaveValue()\`, and \`expect(locator).toBeVisible()\`
-- Add helpful comments to clarify test steps
-- Make the code production-ready and readable
+- Wrap in a single \`test()\` block using async/await and destructured context
+- Use TypeScript-style object typing where appropriate (e.g., userData)
+- Use descriptive test names (e.g., "should complete registration flow")
+- Break down the flow into clearly commented sections (e.g., "// Step 1: Navigate to login")
+- Format code cleanly and use best practices
 
-🚫 Do NOT wrap the code in markdown blocks or backticks like \`\`\`. Just return the plain code.
-`.trim(),
+📍 Locator Strategy (priority order):
+1. \`getByRole('button', { name: 'Submit' })\`
+2. \`getByLabel('First Name')\`
+3. \`page.locator('#elementId')\`
+4. \`getByText('Submit', { exact: true })\`
+5. CSS selectors only if others are not viable, using parent-child structure
+
+🧭 Navigation & Page Loads:
+- Use \`page.goto(url, { waitUntil: 'networkidle' })\`
+- Use \`context.waitForEvent('page')\` and \`waitForLoadState()\` for popups
+- Avoid \`waitForTimeout()\`, \`setTimeout()\`, or hard-coded delays
+
+✅ Assertions (MANDATORY):
+- Add **assertions after each meaningful interaction**
+- Use \`expect(locator).toBeVisible()\`, \`toHaveValue()\`, \`toContainText()\`, etc.
+- Avoid \`await expect(...)\`; use \`expect(...)\` directly
+
+🚫 Do NOT return Markdown or backticks — only raw JavaScript code.
+`.trim()
         },
         {
           role: "user",
@@ -42,6 +53,12 @@ Your task is to convert raw Playwright scripts into clean, modular, and well-str
 
     const enhancedScript = response.choices[0].message.content.trim();
     const processedScript = postProcessScript(enhancedScript);
+
+    // Optional: basic assertion presence check
+    if (!/expect\(/.test(processedScript)) {
+      console.warn("⚠️ Warning: No assertions found in the enhanced script.");
+    }
+
     return processedScript;
   } catch (error) {
     console.error("🔥 GPT Query Failed:", error.message);
@@ -51,30 +68,37 @@ Your task is to convert raw Playwright scripts into clean, modular, and well-str
 
 function postProcessScript(script) {
   // Extract the first page.goto(...) URL
-  const gotoRegex = /await\s+page\.goto\(['"`](.*?)['"`]\)/;
+  const gotoRegex = /await\s+page\.goto\(['"`](.*?)['"`],?\s*{?[^}]*}?\)?\s*;/;
   const match = script.match(gotoRegex);
   const baseUrl = match ? match[1] : null;
 
   if (baseUrl) {
     // Remove all page.goto() calls
-    script = script.replace(new RegExp(`\\s*await\\s+page\\.goto\\(['"\`]${baseUrl}['"\`]\\);?\\s*`, "g"), "");
+    script = script.replace(new RegExp(`\\s*await\\s+page\\.goto\\(['"\`]${baseUrl}['"\`]\\s*(?:,\\s*\\{[^}]*\\})?\\);?\\s*`, "g"), "");
 
-    // Inject test.beforeEach block inside test.describe
-    script = script.replace(
-      /test\.describe\((["'`].*?["'`]),\s*\(\)\s*=>\s*{/, 
-      (fullMatch, title) => {
+    // Inject test.beforeEach block if test.describe exists
+    const describeBlock = /test\.describe\((["'`].*?["'`]),\s*\(\)\s*=>\s*{/;
+    if (describeBlock.test(script)) {
+      script = script.replace(describeBlock, (fullMatch, title) => {
         return `${fullMatch}
   test.beforeEach(async ({ page }) => {
-    await page.goto('${baseUrl}');
+    await page.goto('${baseUrl}', { waitUntil: 'networkidle' });
   });`;
-      }
-    );
+      });
+    } else {
+      // Otherwise inject directly inside the test block
+      script = script.replace(/test\(['"`](.*?)['"`],\s*async\s*\(\{\s*page.*?\}\)\s*=>\s*{/, (match, testName) => {
+        return `test('${testName}', async ({ page, context }) => {
+  // Step 1: Navigate to the start page
+  await page.goto('${baseUrl}', { waitUntil: 'networkidle' });`;
+      });
+    }
   }
 
-  // Fix: remove "await expect()" usage
+  // Remove "await expect(...)" and use just "expect(...)"
   script = script.replace(/await expect\(([^)]+)\)/g, 'expect($1)');
 
-  // Remove accidental parentheses after expect calls like: expect(locator)()
+  // Remove any bad pattern like: expect(locator)()
   script = script.replace(/expect\(([^)]+)\)\(\)/g, 'expect($1)');
 
   return script;
