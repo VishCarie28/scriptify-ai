@@ -1,46 +1,42 @@
 import { test, expect } from '@playwright/test';
 
-test('should complete purchase flow on rahulshettyacademy', async ({ page, context }) => {
+test('should complete purchase flow at Rahul Shetty Academy', async ({ page, context }) => {
   // Step 0: Navigate to the start page
   await page.goto('https://rahulshettyacademy.com/loginpagePractise/', { waitUntil: 'networkidle' });
-
   // Step 1: Navigate to login page
-  // Step 2: Fill in login details and submit
-  await page.getByRole('textbox', { name: 'Username:' }).fill('rahulshettyacademy');
-  await page.getByRole('textbox', { name: 'Password:' }).fill('learning');
+  // Step 2: Fill in login details and sign in
+  const usernameLocator = page.getByRole('textbox', { name: 'Username:' });
+  const passwordLocator = page.getByRole('textbox', { name: 'Password:' });
+  await usernameLocator.click();
+  await usernameLocator.fill('rahulshettyacademy');
+  await passwordLocator.click();
+  await passwordLocator.fill('learning');
   await page.getByRole('checkbox', { name: 'I Agree to the terms and' }).check();
   await page.getByRole('button', { name: 'Sign In' }).click();
 
-  // Assert successful login
-  //expect(await page.locator('app-card')).toBeVisible();
+  // Assertion: Verify successful login
+  expect(page.locator('app-card').nth(0)).toBeVisible();
 
-  // Step 3: Add items to cart
-  await page.locator('app-card').filter({ hasText: 'Blackberry $24.99 Lorem ipsum' }).getByRole('button').click();
-  await page.locator('app-card').filter({ hasText: 'Nokia Edge $24.99 Lorem ipsum' }).getByRole('button').click();
-  await page.locator('app-card').filter({ hasText: 'Samsung Note 8 $24.99 Lorem' }).getByRole('button').click();
-  await page.locator('app-card').filter({ hasText: 'iphone X $24.99 Lorem ipsum' }).getByRole('button').click();
-
-  // Assert items in cart
-  expect(await page.getByText('Checkout ( 4 ) (current)')).toBeVisible();
-
-  // Step 4: Proceed to checkout
+  // Step 3: Select products and proceed to checkout
+  const productLocator = (productText) => page.locator('app-card').filter({ hasText: productText }).getByRole('button');
+  await productLocator('iphone X $24.99 Lorem ipsum').click();
+  await productLocator('Samsung Note 8 $24.99 Lorem').click();
+  await productLocator('Nokia Edge $24.99 Lorem ipsum').click();
+  await productLocator('Blackberry $24.99 Lorem ipsum').click();
   await page.getByText('Checkout ( 4 ) (current)').click();
   await page.getByRole('button', { name: 'Checkout' }).click();
 
-  // Step 5: Fill in delivery details and agree to terms
-  await page.getByRole('textbox', { name: 'Please choose your delivery' }).fill('Varanasi');
+  // Step 4: Fill in delivery details and confirm purchase
+  const deliveryLocator = page.getByRole('textbox', { name: 'Please choose your delivery' });
+  await deliveryLocator.click();
+  await deliveryLocator.fill('Varanasi');
   await page.getByText('I agree with the term &').click();
   await page.getByRole('button', { name: 'Purchase' }).click();
 
-  // Assert successful purchase
-  expect(await page.getByText('× Success! Thank you! Your')).toBeVisible();
+  // Assertion: Verify successful purchase
+  expect(page.getByText('× Success! Thank you! Your')).toBeVisible();
 
-  // Step 6: Close success message and navigate back to home
-  await page.getByText('× Success! Thank you! Your').click();
+  // Step 5: Close the success message
   await page.getByRole('link', { name: 'close' }).click();
-  await page.getByRole('link', { name: 'ProtoCommerce Home' }).click();
-
-  // Assert successful navigation back to home
-  //expect(await page.getByRole('link', { name: 'ProtoCommerce Home' })).toBeVisible();
 });
 

@@ -14,12 +14,12 @@ async function askGPT(rawScript) {
           content: `
 You are an expert automation test developer.
 
-Your task is to convert raw Playwright scripts into clean, structured, and **single test case** Playwright Test Runner code using JavaScript with proper type annotations.
+Your task is to convert raw Playwright scripts into clean, structured, and **single test case** Playwright Test Runner code using JavaScript with proper Java annotations.
 
 ✅ You must:
 - Use \`import { test, expect } from '@playwright/test'\`
 - Wrap in a single \`test()\` block using async/await and destructured context
-- Use TypeScript-style object typing where appropriate (e.g., userData)
+- Use JavaScript-style object typing where appropriate (e.g., userData)
 - Use descriptive test names (e.g., "should complete registration flow")
 - Break down the flow into clearly commented sections (e.g., "// Step 1: Navigate to login")
 - Format code cleanly and use best practices
@@ -39,7 +39,7 @@ Your task is to convert raw Playwright scripts into clean, structured, and **sin
 ✅ Assertions (MANDATORY):
 - Add **assertions after each meaningful interaction**
 - Use \`expect(locator).toBeVisible()\`, \`toHaveValue()\`, \`toContainText()\`, etc.
-- Avoid \`await expect(...)\`; use \`expect(...)\` directly
+- Do NOT use \`await expect(...)\` or \`expect(await ...)\`
 
 🚫 Do NOT return Markdown or backticks — only raw JavaScript code.
 `.trim()
@@ -95,10 +95,10 @@ function postProcessScript(script) {
     }
   }
 
-  // Remove "await expect(...)" and use just "expect(...)"
-  script = script.replace(/await expect\(([^)]+)\)/g, 'expect($1)');
+  // Fix: replace `expect(await ...)` with `expect(...)`
+  script = script.replace(/expect\s*\(\s*await\s+(.*?)\s*\)/g, 'expect($1)');
 
-  // Remove any bad pattern like: expect(locator)()
+  // Remove accidental parentheses after expect calls like: expect(locator)()
   script = script.replace(/expect\(([^)]+)\)\(\)/g, 'expect($1)');
 
   return script;
