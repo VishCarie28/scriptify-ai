@@ -1,42 +1,35 @@
 import { test, expect } from '@playwright/test';
 
-test('should complete purchase flow at Rahul Shetty Academy', async ({ page, context }) => {
+test('should complete login flow on rahulshettyacademy', async ({ page, context }) => {
   // Step 0: Navigate to the start page
-  await page.goto('https://rahulshettyacademy.com/loginpagePractise/', { waitUntil: 'networkidle' });
+  await page.goto('https://rahulshettyacademy.com/locatorspractice/', { waitUntil: 'networkidle' });
   // Step 1: Navigate to login page
-  // Step 2: Fill in login details and sign in
-  const usernameLocator = page.getByRole('textbox', { name: 'Username:' });
-  const passwordLocator = page.getByRole('textbox', { name: 'Password:' });
+  // Step 2: Fill in the username
+  const usernameLocator = page.locator('input[name="Username"]');
   await usernameLocator.click();
-  await usernameLocator.fill('rahulshettyacademy');
+  await usernameLocator.fill('vishal');
+  expect(usernameLocator.inputValue()).toBe('vishal');
+
+  // Step 3: Fill in the password
+  const passwordLocator = page.locator('input[name="Password"]');
   await passwordLocator.click();
-  await passwordLocator.fill('learning');
-  await page.getByRole('checkbox', { name: 'I Agree to the terms and' }).check();
-  await page.getByRole('button', { name: 'Sign In' }).click();
+  await passwordLocator.fill('singh');
+  expect(passwordLocator.inputValue()).toBe('singh');
 
-  // Assertion: Verify successful login
-  expect(page.locator('app-card').nth(0)).toBeVisible();
+  // Step 4: Check "Remember my username" option
+  const rememberUsernameLocator = page.locator('input[name="Remember my username"]');
+  await rememberUsernameLocator.check();
+  expect(rememberUsernameLocator.isChecked()).toBe(true);
 
-  // Step 3: Select products and proceed to checkout
-  const productLocator = (productText) => page.locator('app-card').filter({ hasText: productText }).getByRole('button');
-  await productLocator('iphone X $24.99 Lorem ipsum').click();
-  await productLocator('Samsung Note 8 $24.99 Lorem').click();
-  await productLocator('Nokia Edge $24.99 Lorem ipsum').click();
-  await productLocator('Blackberry $24.99 Lorem ipsum').click();
-  await page.getByText('Checkout ( 4 ) (current)').click();
-  await page.getByRole('button', { name: 'Checkout' }).click();
+  // Step 5: Agree to the terms
+  const agreeTermsLocator = page.locator('input[name="I agree to the terms and"]');
+  await agreeTermsLocator.check();
+  expect(agreeTermsLocator.isChecked()).toBe(true);
 
-  // Step 4: Fill in delivery details and confirm purchase
-  const deliveryLocator = page.getByRole('textbox', { name: 'Please choose your delivery' });
-  await deliveryLocator.click();
-  await deliveryLocator.fill('Varanasi');
-  await page.getByText('I agree with the term &').click();
-  await page.getByRole('button', { name: 'Purchase' }).click();
+  // Step 6: Submit the form
+  const signInButtonLocator = page.locator('button[name="Sign In"]');
+  await signInButtonLocator.click();
 
-  // Assertion: Verify successful purchase
-  expect(page.getByText('× Success! Thank you! Your')).toBeVisible();
-
-  // Step 5: Close the success message
-  await page.getByRole('link', { name: 'close' }).click();
+  // Add any necessary assertions here to validate successful form submission
 });
 
