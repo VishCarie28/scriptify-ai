@@ -23,8 +23,8 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h2 style="margin: 0; font-size: 16px; color:rgb(89, 238, 208);">🎬 Scriptify AI - by Vishal</h2>
       <div style="display: flex; gap: 6px;">
-        <button id="minimizeBtn" title="Minimize panel" style="border:none;background:transparent;font-size:10px;cursor:pointer;">➖</button>
-        <button id="closeBtn" title="Close panel" style="border:none;background:transparent;font-size:10px;cursor:pointer;">❌</button>
+        <button id="minimizeBtn" title="Minimize panel" class="scriptify-icon-btn">➖</button>
+        <button id="closeBtn" title="Close panel" class="scriptify-icon-btn">❌</button>
       </div>
     </div>
 
@@ -66,6 +66,19 @@
 
   const style = document.createElement("style");
   style.textContent = `
+    #scriptify-panel {
+      all: initial;
+      font-family: Segoe UI, sans-serif;
+    }
+
+    #scriptify-panel * {
+      all: unset;
+      display: revert;
+      box-sizing: border-box;
+      font-family: inherit;
+      text-transform: none !important;
+    }
+
     #scriptify-panel .scriptify-btn {
       padding: 10px 14px;
       font-size: 14px;
@@ -87,6 +100,14 @@
       transform: scale(0.98);
     }
 
+    #scriptify-panel .scriptify-icon-btn {
+      border: none;
+      background: transparent;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
     #scriptify-spinner .spinner {
       margin: 0 auto;
       width: 24px;
@@ -104,7 +125,7 @@
   document.head.appendChild(style);
   document.body.appendChild(panel);
 
-  // Timer handling
+  // Timer
   let timerInterval = null;
   let seconds = 0;
   const timerDisplay = document.getElementById("scriptify-timer");
@@ -125,7 +146,7 @@
     timerDisplay.style.color = "#e74c3c";
   }
 
-  // Draggable
+  // Dragging
   panel.onmousedown = function (e) {
     let offsetX = e.clientX - panel.getBoundingClientRect().left;
     let offsetY = e.clientY - panel.getBoundingClientRect().top;
@@ -144,7 +165,7 @@
     document.addEventListener("mouseup", onMouseUp);
   };
 
-  // Buttons
+  // Button handlers
   document.getElementById("closeBtn").onclick = () => {
     panel.remove();
     window.scriptifyInjected = false;
