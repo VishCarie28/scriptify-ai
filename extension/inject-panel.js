@@ -30,12 +30,12 @@
 
     <div id="scriptify-body">
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="scriptify-btn" id="recordBtn">🎥 Start Recording</button>
-        <button class="scriptify-btn" id="stopBtn">🛑 Stop & Save</button>
-        <button class="scriptify-btn" id="gptEnhanceBtn">🤖 Enhance with GPT</button>
-        <button class="scriptify-btn" id="copyBtn">📋 Copy to Clipboard</button>
-        <button class="scriptify-btn" id="downloadBtn">⬇️ Download Script</button>
-        <button class="scriptify-btn" id="clearBtn">🧹 Clear Output</button>
+        <button class="scriptify-btn" id="recordBtn" title="Start recording user interactions">🎥 Start Recording</button>
+        <button class="scriptify-btn" id="stopBtn" title="Stop and save recorded script">🛑 Stop & Save</button>
+        <button class="scriptify-btn" id="gptEnhanceBtn" title="Enhance script with GPT suggestions">🤖 Enhance with GPT</button>
+        <button class="scriptify-btn" id="copyBtn" title="Copy script to clipboard">📋 Copy to Clipboard</button>
+        <button class="scriptify-btn" id="downloadBtn" title="Download script as file">⬇️ Download Script</button>
+        <button class="scriptify-btn" id="clearBtn" title="Clear the output and reset timer">🧹 Clear Output</button>
       </div>
 
       <div id="scriptify-spinner" style="display: none; margin-top: 16px; text-align: center;">
@@ -66,14 +66,7 @@
 
   const style = document.createElement("style");
   style.textContent = `
-    #scriptify-panel {
-      all: initial;
-      font-family: Segoe UI, sans-serif;
-    }
-
     #scriptify-panel * {
-      all: unset;
-      display: revert;
       box-sizing: border-box;
       font-family: inherit;
       text-transform: none !important;
@@ -130,8 +123,15 @@
   let seconds = 0;
   const timerDisplay = document.getElementById("scriptify-timer");
 
-  function startTimer() {
+  function resetTimer() {
+    clearInterval(timerInterval);
     seconds = 0;
+    timerDisplay.textContent = "⏱ 00:00";
+    timerDisplay.style.color = "#888";
+  }
+
+  function startTimer() {
+    resetTimer();
     timerDisplay.style.color = "#28a745";
     timerInterval = setInterval(() => {
       seconds++;
@@ -278,11 +278,12 @@
     const blob = new Blob([script], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "test-script.js";
+    a.download = "test-script.txt";
     a.click();
   };
 
   document.getElementById("clearBtn").onclick = () => {
     document.getElementById("scriptify-output").textContent = "// Your test script will appear here...";
+    resetTimer();
   };
 })();
