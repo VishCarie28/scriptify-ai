@@ -1,54 +1,56 @@
 #scriptify-panel {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    width: 340px;
-    background: #111;
-    color: #fff;
-    border: 1px solid #444;
-    padding: 16px;
-    font-family: 'Segoe UI', sans-serif;
-    z-index: 999999;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    resize: both;
-    overflow: auto;
-  }
-  
-  #scriptify-panel h2 {
-    margin-top: 0;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    color: #66d9ef;
-  }
-  
-  #scriptify-panel button {
-    display: block;
-    margin-bottom: 12px;
-    width: 100%;
-    background: #222;
-    border: 1px solid #555;
-    border-radius: 8px;
-    padding: 10px;
-    color: #fff;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  #scriptify-panel button:hover {
-    background-color: #333;
-  }
-  
-  #scriptify-output {
-    white-space: pre-wrap;
-    background: #222;
-    border-radius: 8px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 13px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  width: 340px;
+  background: #1c1f26;
+  color: #f5f6fa;
+  border: 1px solid #2f3542;
+  padding: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  z-index: 999999;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  resize: both;
+  overflow: auto;
+}
+
+#scriptify-panel h2 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #70e6f8;
+}
+
+#scriptify-panel button {
+  display: block;
+  margin-bottom: 12px;
+  width: 100%;
+  background: #2d3436;
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 10px;
+  color: #f5f6fa;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#scriptify-panel button:hover {
+  background-color: #3c4347;
+  transform: translateY(-1px);
+}
+
+#scriptify-output {
+  white-space: pre-wrap;
+  background: #2f3640;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #444;
+  color: #dcdde1;
+}

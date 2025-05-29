@@ -4,24 +4,11 @@
 
   const panel = document.createElement("div");
   panel.id = "scriptify-panel";
-  panel.style.position = "fixed";
-  panel.style.top = "10px";
-  panel.style.right = "20px";
-  panel.style.width = "300px";
-  panel.style.backgroundColor = "#ffffff";
-  panel.style.color = "#222";
-  panel.style.border = "1px solid #ccc";
-  panel.style.borderRadius = "16px";
-  panel.style.padding = "16px";
-  panel.style.fontFamily = "Segoe UI, sans-serif";
-  panel.style.zIndex = "99999";
-  panel.style.boxShadow = "0 6px 18px rgba(0,0,0,0.1)";
-  panel.style.resize = "both";
-  panel.style.overflow = "auto";
+  panel.className = "scriptify-panel";
 
   panel.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h2 style="margin: 0; font-size: 16px; color:rgb(89, 238, 208);">🎬 Scriptify AI - by Vishal</h2>
+      <h2>🎬 Scriptify AI - by Vishal</h2>
       <div style="display: flex; gap: 6px;">
         <button id="minimizeBtn" title="Minimize panel" class="scriptify-icon-btn">➖</button>
         <button id="closeBtn" title="Close panel" class="scriptify-icon-btn">❌</button>
@@ -43,19 +30,7 @@
         <div style="font-size: 13px; margin-top: 6px; color: #888;">Enhancing with GPT...</div>
       </div>
 
-      <pre id="scriptify-output" style="
-        margin-top: 16px;
-        background: #f4f4f4;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        max-height: 150px;
-        overflow-y: auto;
-        white-space: pre-wrap;
-        font-family: 'Fira Code', monospace;
-        color: #222;
-        border: 1px solid #ddd;
-      ">// Your test script will appear here...</pre>
+      <pre id="scriptify-output">// Your test script will appear here...</pre>
 
       <div style="font-size: 11px; margin-top: 10px; color: #777;">
         🛈 Hover over any button to see what it does.
@@ -64,58 +39,6 @@
     <span id="scriptify-timer" style="font-size: 13px; font-weight: bold; color: #888;">⏱ 00:00</span>
   `;
 
-  const style = document.createElement("style");
-  style.textContent = `
-    #scriptify-panel * {
-      box-sizing: border-box;
-      font-family: inherit;
-      text-transform: none !important;
-    }
-
-    #scriptify-panel .scriptify-btn {
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 500;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-      color: #333;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.1s ease;
-      text-align: left;
-    }
-
-    #scriptify-panel .scriptify-btn:hover {
-      background: #eaeaea;
-    }
-
-    #scriptify-panel .scriptify-btn:active {
-      transform: scale(0.98);
-    }
-
-    #scriptify-panel .scriptify-icon-btn {
-      border: none;
-      background: transparent;
-      font-size: 10px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    #scriptify-spinner .spinner {
-      margin: 0 auto;
-      width: 24px;
-      height: 24px;
-      border: 3px solid #ccc;
-      border-top: 3px solid #00b894;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  `;
-  document.head.appendChild(style);
   document.body.appendChild(panel);
 
   // Timer
@@ -219,8 +142,7 @@
               stopTimer();
             });
         } else {
-          document.getElementById("scriptify-output").textContent =
-            "❌ Failed to save script.";
+          document.getElementById("scriptify-output").textContent = "❌ Failed to save script.";
         }
       })
       .catch((err) => {
