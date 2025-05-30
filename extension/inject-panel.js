@@ -30,10 +30,10 @@
         <div style="font-size: 13px; margin-top: 6px; color: #888;">Enhancing with GPT...</div>
       </div>
 
-      <pre id="scriptify-output">// Your test script will appear here...</pre>
+<pre id="scriptify-output" style="max-height: 200px; overflow-y: auto; white-space: pre-wrap;">// Your test script will appear here...</pre>
 
       <div style="font-size: 11px; margin-top: 10px; color: #777;">
-        🛈 Hover over any button to see what it does.
+        🖱 Hover over any button to see what it does.
       </div>
     </div>
     <span id="scriptify-timer" style="font-size: 13px; font-weight: bold; color: #888;">⏱ 00:00</span>
