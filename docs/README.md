@@ -705,11 +705,45 @@ python scripts/run_tests.py --debug
 
 Contributions are welcome! Please follow these steps:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. **Fork the repository**
+   ```bash
+   # Click "Fork" on GitHub, then:
+   git clone https://github.com/YOUR_USERNAME/scriptify-ai.git
+   cd scriptify-ai
+   git remote add upstream https://github.com/VishCarie28/scriptify-ai.git
+   ```
+
+2. **Create a feature branch**
+   ```bash
+   git checkout main
+   git pull upstream main
+   git checkout -b feature/amazing-feature
+   ```
+
+3. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "Add amazing feature"
+   ```
+
+4. **Push to the branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+
+5. **Open a Pull Request**
+   - Go to your fork on GitHub
+   - Click "Compare & pull request"
+   - Fill out the PR template
+
+### 📚 For Detailed Guidelines
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for complete contribution guidelines, including:
+- Code style guidelines
+- Testing requirements
+- Branch naming conventions
+- PR review process
+- Issue reporting
 
 ### Development Guidelines
 
