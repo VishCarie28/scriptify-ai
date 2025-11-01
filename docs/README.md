@@ -761,8 +761,8 @@ ISC License - See LICENSE file for details
 
 **Vishal Singh**
 
-- GitHub: [@vishalsingh](https://github.com/vishalsingh)
-- Repository: [scriptify-ai](https://github.com/vishalsingh/scriptify-ai)
+- GitHub: [@vishalsingh](https://github.com/VishCarie28)
+- Repository: [scriptify-ai](https://github.com/VishCarie28/scriptify-ai)
 
 ## 🙏 Acknowledgments
 
