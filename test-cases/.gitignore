@@ -1,0 +1,11 @@
+# Pytest cache
+.pytest_cache/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test results
+../test-results/
+../allure-reports/

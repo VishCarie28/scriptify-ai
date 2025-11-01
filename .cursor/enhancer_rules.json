@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "name": "Scriptify Enhancer Improvements",
+    "version": "1.0.0",
+    "description": "Defines structured AI refactoring and validation rules for enhancer.controller.js and enhancer-wrapper.cjs to ensure ChatGPT-quality output for POM test generation.",
+    "applies_to": [
+      "enhancer.controller.js",
+      "enhancer-wrapper.cjs"
+    ],
+    "language": "javascript",
+    "author": "Vishal Singh"
+  },
+  "rules": [
+    {
+      "category": "AI Prompt & Accuracy",
+      "tasks": [
+        "Ensure all model responses are valid JSON (no Markdown or commentary).",
+        "Inject structured POM prompt with required JSON keys: basePage, configManager, config, pages[], tests[].",
+        "Add few-shot examples for single and multi-page POM generation.",
+        "If .cursor/rules exists, merge its content into the prompt context.",
+        "Use environment-configurable model and temperature: OPENAI_MODEL, OPENAI_TEMPERATURE.",
+        "Limit conversation history to 5 messages and persist under test-cases/.enhancer-history.json."
+      ]
+    },
+    {
+      "category": "File & Folder Handling",
+      "tasks": [
+        "Auto-create missing folders: test-cases/pages, tests, config, utils, data, test-results/logs.",
+        "Normalize all generated file names to snake_case format.",
+        "Implement incremental enhancement mode to append new methods to existing page objects.",
+        "Before overwriting files, create .backup copies and rollback on validation errors."
+      ]
+    },
+    {
+      "category": "Validation & Quality",
+      "tasks": [
+        "Perform Python syntax validation using 'python3 -m py_compile'.",
+        "Auto-format files with Black; lint with Flake8.",
+        "Optionally perform mypy type checks (non-blocking).",
+        "Run pytest --collect-only to validate test discovery.",
+        "Perform import validation for each generated file to catch missing dependencies."
+      ]
+    },
+    {
+      "category": "Logic & Structure",
+      "tasks": [
+        "Extract base_url dynamically from first 'page.goto()' in raw script.",
+        "Insert extracted base_url into test-cases/config/config.json if not already present.",
+        "Ensure assertions are placed only in test files, not after each Page Object action.",
+        "Add implicit waits in Page Object methods instead of redundant expect() calls.",
+        "Maintain consistent imports for BasePage and ConfigManager.",
+        "Ensure PEP8 compliance and add Python type hints across generated code."
+      ]
+    },
+    {
+      "category": "Reporting & Logs",
+      "tasks": [
+        "Generate a JSON summary report of each run under test-results/logs/.",
+        "Print a console summary showing created, updated, and failed files.",
+        "Extract any detected test data (usernames, passwords) and save to test-cases/data/testdata.json.",
+        "Support dryRun mode that performs validation without writing files."
+      ]
+    }
+  ]
+}
+

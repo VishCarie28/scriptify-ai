@@ -1,0 +1,603 @@
+#scriptify-panel {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 360px;
+    max-width: calc(100vw - 40px) !important;
+    min-height: 400px;
+    max-height: calc(100vh - 40px) !important;
+    overflow: hidden !important; /* Remove scroll feature for entire extension */
+    overflow-x: hidden !important; /* Prevent horizontal overflow */
+    /* Ensure panel stays within viewport on all websites */
+    left: auto !important;
+    bottom: auto !important;
+    /* Prevent clipping from page styles */
+    isolation: isolate !important;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 100%);
+    color: #e8eaed;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    padding: 20px;
+    padding-bottom: 24px;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    z-index: 2147483647 !important;
+    border-radius: 16px;
+    box-shadow: 
+        0 25px 50px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(255,255,255,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    resize: none !important;
+    backdrop-filter: blur(20px);
+    user-select: none;
+    position: relative;
+    display: flex !important; /* Use flexbox for proper layout */
+    flex-direction: column !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#scriptify-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px;
+    padding: 2px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+}
+
+#scriptify-panel h2 {
+    margin: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: left;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: visible !important;
+    white-space: nowrap !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+/* Underline removed - as requested */
+#scriptify-panel h2::after {
+    display: none;
+}
+
+/* Header container - prevent clipping */
+#scriptify-header {
+    margin-bottom: 20px !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    padding-bottom: 4px !important;
+    flex-shrink: 0 !important;
+    min-height: 44px !important; /* Ensure minimum height to prevent clipping */
+    max-height: 44px !important; /* Prevent expansion */
+    overflow: visible !important; /* Ensure header content is visible */
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    /* Prevent clipping on different websites */
+    contain: layout style !important;
+}
+
+/* Progress Bar Styling */
+#progress-container {
+    margin-bottom: 24px;
+}
+
+#progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(102, 126, 234, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+#progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+#progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+#progress-text {
+    font-size: 13px;
+    color: #888;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Enhanced Button Styling */
+.scriptify-icon-btn {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%) !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+    border-radius: 8px !important; /* Smaller border radius */
+    padding: 6px 10px !important; /* Reduced padding */
+    font-size: 12px !important; /* Smaller font size */
+    margin-bottom: 0 !important;
+    width: auto !important;
+    min-width: 32px !important; /* Smaller min width */
+    height: 28px !important; /* Fixed height */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.2) !important; /* Smaller shadow */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.scriptify-icon-btn:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%) !important;
+    transform: scale(1.05) translateY(-1px) !important; /* Reduced scale and movement */
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important; /* Smaller shadow */
+    border-color: rgba(102, 126, 234, 0.6) !important;
+}
+
+.scriptify-icon-btn:active {
+    transform: scale(1.05) translateY(0) !important;
+}
+
+/* Enhanced Step Button Styling */
+.step-button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 12px !important;
+    width: 100% !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 50%, rgba(240, 147, 251, 0.15) 100%) !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+    border-radius: 16px !important;
+    padding: 12px 16px !important;
+    color: #e8eaed !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+    min-height: 48px !important;
+}
+
+.step-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-button:hover::before {
+    left: 100%;
+}
+
+.step-icon {
+    font-size: 16px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.step-text {
+    flex: 1;
+    text-align: left;
+    font-weight: 600;
+}
+
+.step-status {
+    font-size: 16px;
+    margin-left: 12px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+/* Button States */
+.step-button.enabled {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 50%, rgba(240, 147, 251, 0.25) 100%) !important;
+    border-color: rgba(102, 126, 234, 0.5) !important;
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3) !important;
+}
+
+.step-button.enabled:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 50%, rgba(240, 147, 251, 0.4) 100%) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(102, 126, 234, 0.6) !important;
+    border-color: rgba(102, 126, 234, 0.7) !important;
+}
+
+.step-button.enabled:active {
+    transform: translateY(-1px) scale(1.01) !important;
+}
+
+.step-button.disabled {
+    background: linear-gradient(135deg, rgba(60, 60, 60, 0.3) 0%, rgba(40, 40, 40, 0.3) 100%) !important;
+    color: #888 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(100, 100, 100, 0.2) !important;
+    opacity: 0.6 !important;
+}
+
+.step-button.disabled:hover {
+    background: linear-gradient(135deg, rgba(60, 60, 60, 0.3) 0%, rgba(40, 40, 40, 0.3) 100%) !important;
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Status-specific styling */
+.step-button[data-step="record"]:not(.disabled) {
+    border-color: rgba(255, 107, 107, 0.5) !important;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(238, 90, 82, 0.15) 100%) !important;
+}
+
+.step-button[data-step="enhance"]:not(.disabled) {
+    border-color: rgba(254, 202, 87, 0.5) !important;
+    background: linear-gradient(135deg, rgba(254, 202, 87, 0.15) 0%, rgba(255, 159, 243, 0.15) 100%) !important;
+}
+
+.step-button[data-step="run_tests"]:not(.disabled) {
+    border-color: rgba(102, 126, 234, 0.5) !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%) !important;
+}
+
+.step-button[data-step="generate_report"]:not(.disabled) {
+    border-color: rgba(46, 204, 113, 0.5) !important;
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.15) 0%, rgba(39, 174, 96, 0.15) 100%) !important;
+}
+
+.step-button[data-step="open_report"]:not(.disabled) {
+    border-color: rgba(52, 152, 219, 0.5) !important;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.15) 0%, rgba(41, 128, 185, 0.15) 100%) !important;
+}
+
+.step-button[data-step="trigger_jenkins"]:not(.disabled) {
+    border-color: rgba(155, 89, 182, 0.5) !important;
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.15) 0%, rgba(142, 68, 173, 0.15) 100%) !important;
+}
+
+/* Panel Body - Handle vertical layout properly */
+#scriptify-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important; /* Allow flex children to shrink */
+    overflow: hidden !important; /* Remove scroll feature */
+    overflow-x: hidden !important;
+    gap: 0 !important;
+}
+
+/* Spinner container - prevent overflow */
+#scriptify-spinner {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    word-wrap: break-word !important;
+    margin: 12px 0 !important;
+    flex-shrink: 0 !important; /* Don't shrink spinner */
+    min-height: 40px !important; /* Fixed height for spinner */
+    max-height: 40px !important; /* Prevent vertical expansion */
+    display: none; /* Hidden by default - only show when button is clicked (using inline style override) */
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Show spinner when explicitly set via JavaScript */
+#scriptify-spinner[style*="display: flex"],
+#scriptify-spinner.showing {
+    display: flex !important;
+}
+
+/* Enhanced Output Styling */
+#scriptify-output {
+    white-space: pre-wrap !important;
+    background: linear-gradient(135deg, rgba(15, 15, 35, 0.8) 0%, rgba(26, 26, 46, 0.8) 50%, rgba(22, 33, 62, 0.8) 100%) !important;
+    border-radius: 12px !important;
+    padding: 14px 16px !important;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace !important;
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+    height: 120px !important; /* Fixed height to prevent overflow */
+    max-height: 120px !important; /* Ensure it doesn't exceed this height */
+    min-height: 120px !important; /* Fixed minimum height */
+    overflow-y: auto !important; /* Enable vertical scrolling */
+    overflow-x: hidden !important; /* Hide horizontal scrollbar */
+    word-wrap: break-word !important; /* Break long words at word boundaries */
+    word-break: normal !important; /* Don't break words unnecessarily - wrap at word boundaries */
+    overflow-wrap: break-word !important; /* Modern property for word wrapping */
+    border: 1px solid rgba(102, 126, 234, 0.2) !important;
+    color: #ffffff !important;
+    margin: 12px 0 !important;
+    box-shadow: 
+        inset 0 2px 8px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(102, 126, 234, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    position: relative !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+    font-weight: 500 !important;
+    flex-shrink: 0 !important; /* Don't shrink output area */
+}
+
+#scriptify-output::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+}
+
+#scriptify-output::-webkit-scrollbar {
+    width: 10px;
+}
+
+#scriptify-output::-webkit-scrollbar-track {
+    background: rgba(15, 15, 35, 0.3);
+    border-radius: 5px;
+}
+
+#scriptify-output::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(118, 75, 162, 0.6) 100%);
+    border-radius: 5px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+#scriptify-output::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+}
+
+/* Panel scrollbar styling removed - scrolling disabled */
+
+/* Ensure text visibility in output */
+#scriptify-output * {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+}
+
+#scriptify-output {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+    font-weight: 500 !important;
+}
+
+/* Enhanced Spinner */
+.spinner {
+    margin: 0 !important;
+    width: 18px !important;
+    height: 18px !important;
+    border: 2.5px solid rgba(102, 126, 234, 0.2) !important;
+    border-top: 2.5px solid #667eea !important;
+    border-right: 2.5px solid #764ba2 !important;
+    border-radius: 50% !important;
+    animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.4) !important;
+    flex-shrink: 0 !important; /* Prevent spinner from affecting layout */
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Enhanced Timer - Now in header next to X button */
+#scriptify-timer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 6px 10px !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%) !important; /* Match X button background */
+    border-radius: 8px !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important; /* Match X button border exactly */
+    color: #e8eaed !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(12px) !important; /* Match X button backdrop */
+    font-size: 12px !important;
+    position: relative !important;
+    z-index: 10 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.2) !important; /* Match X button shadow */
+    min-width: 48px !important; /* Fixed width to prevent boundary issues */
+    max-width: 80px !important; /* Prevent overflow on long times */
+    height: 28px !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    overflow: hidden !important; /* Prevent text overflow */
+    white-space: nowrap !important; /* Keep timer on one line */
+    box-sizing: border-box !important; /* Include padding in width calculation */
+}
+
+/* Minimized panel styles removed - no longer needed */
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 12px;
+    position: relative;
+}
+
+.status-indicator.recording {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    box-shadow: 0 0 16px rgba(255, 107, 107, 0.6), 0 0 32px rgba(255, 107, 107, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.status-indicator.enhancing {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+    box-shadow: 0 0 16px rgba(254, 202, 87, 0.6), 0 0 32px rgba(254, 202, 87, 0.3);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-indicator.testing {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 0 16px rgba(102, 126, 234, 0.6), 0 0 32px rgba(102, 126, 234, 0.3);
+    animation: pulse 1.8s ease-in-out infinite;
+}
+
+.status-indicator.idle {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    box-shadow: 0 0 6px rgba(149, 165, 166, 0.3);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.8;
+    }
+}
+
+/* Enhanced Tooltips */
+.step-button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, rgba(15, 15, 35, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
+    color: #e8eaed;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    backdrop-filter: blur(16px);
+    max-width: 300px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    pointer-events: none;
+    opacity: 0;
+    animation: tooltipFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    #scriptify-panel {
+        width: calc(100vw - 40px);
+        right: 20px;
+        left: 20px;
+    }
+}
+
+/* Prevent overflow on small screens */
+@media (max-height: 600px) {
+    #scriptify-panel {
+        max-height: calc(100vh - 20px);
+        overflow-y: auto;
+    }
+    
+    #scriptify-output {
+        height: 100px; /* Fixed height on mobile */
+        max-height: 100px; /* Ensure it doesn't exceed this height */
+    }
+}
+
+/* Animation for panel appearance */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+#scriptify-panel {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Success/Error message styling */
+.message {
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    border-radius: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(12px);
+}
+
+.message.success {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.2) 0%, rgba(39, 174, 96, 0.2) 100%);
+    border: 1px solid rgba(46, 204, 113, 0.4);
+    color: #2ecc71;
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+}
+
+.message.error {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(192, 57, 43, 0.2) 100%);
+    border: 1px solid rgba(231, 76, 60, 0.4);
+    color: #e74c3c;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+.message.info {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.2) 100%);
+    border: 1px solid rgba(52, 152, 219, 0.4);
+    color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}

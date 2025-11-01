@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Enhance Raw Script to POM",
+    "description": "Convert a recorded Playwright script into Page Object Models and test files",
+    "prompt": "Analyze the raw script in test-cases/raw/, detect pages from navigation URLs, update or create page objects in test-cases/pages/, and generate a new test file in test-cases/tests/. Follow the rules in .cursor/rules for structure and code quality."
+  }
+]
+

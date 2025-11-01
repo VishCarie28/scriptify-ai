@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Scriptify AI",
+  "version": "2.0",
+  "description": "Easily record, preview, and enhance Playwright tests with AI.",
+  "icons": {
+    "128": "icon.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["scripting", "activeTab", "storage"],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ]
+}

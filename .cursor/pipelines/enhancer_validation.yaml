@@ -1,0 +1,237 @@
+# Enhancer Validation Pipeline
+# Automatically runs after each enhancement to validate generated code
+# Usage: Cursor AI will trigger this pipeline after enhancer.controller.js generates files
+
+name: Enhancer Validation Pipeline
+version: "1.0.0"
+description: Validates generated POM test files after enhancement process
+
+triggers:
+  - event: file_generated
+    patterns:
+      - "test-cases/pages/*.py"
+      - "test-cases/tests/test_*.py"
+      - "test-cases/utils/*.py"
+
+steps:
+  - name: Clean Cache
+    description: Remove Python cache files before validation
+    command: |
+      find test-cases -type d -name "__pycache__" -not -path "./venv/*" -exec rm -rf {} + 2>/dev/null || true
+      find test-cases -type f -name "*.pyc" -not -path "./venv/*" -delete 2>/dev/null || true
+      find test-cases -type d -name ".pytest_cache" -not -path "./venv/*" -exec rm -rf {} + 2>/dev/null || true
+    continue_on_error: true
+
+  - name: Syntax Validation
+    description: Validate Python syntax for all generated files
+    command: |
+      for file in test-cases/pages/*.py test-cases/tests/test_*.py test-cases/utils/*.py 2>/dev/null; do
+        if [ -f "$file" ]; then
+          python3 -m py_compile "$file" && echo "✅ Syntax OK: $file" || echo "❌ Syntax Error: $file"
+        fi
+      done
+    continue_on_error: false
+
+  - name: Import Validation
+    description: Check that all imports can be resolved
+    command: |
+      export PYTHONPATH=test-cases:$PYTHONPATH
+      python3 -c "
+      import sys
+      errors = []
+      modules = ['pages.base_page', 'utils.config_manager']
+      
+      # Check for any generated page objects
+      import os
+      pages_dir = 'test-cases/pages'
+      if os.path.exists(pages_dir):
+          for file in os.listdir(pages_dir):
+              if file.endswith('_page.py') and file != 'base_page.py':
+                  module_name = f'pages.{file[:-3]}'
+                  modules.append(module_name)
+      
+      for mod in modules:
+          try:
+              __import__(mod)
+              print(f'✅ {mod}')
+          except Exception as e:
+              errors.append(f'{mod}: {e}')
+              print(f'❌ {mod}: {e}')
+      
+      if errors:
+          sys.exit(1)
+      "
+    continue_on_error: false
+
+  - name: Code Formatting (Black)
+    description: Auto-format generated Python files with Black
+    command: |
+      if command -v black &> /dev/null; then
+        black --quiet test-cases/pages/*.py test-cases/tests/test_*.py test-cases/utils/*.py 2>/dev/null || echo "⚠️ Black not available, skipping format"
+      else
+        echo "⚠️ Black not installed, skipping format"
+      fi
+    continue_on_error: true
+
+  - name: Linting (Flake8)
+    description: Lint generated Python files with Flake8
+    command: |
+      if command -v flake8 &> /dev/null; then
+        flake8 --max-line-length=120 --ignore=E203,W503 test-cases/pages/*.py test-cases/tests/test_*.py test-cases/utils/*.py 2>/dev/null || echo "⚠️ Flake8 warnings found (non-blocking)"
+      else
+        echo "⚠️ Flake8 not installed, skipping lint"
+      fi
+    continue_on_error: true
+
+  - name: Pytest Collection
+    description: Validate that pytest can discover and import all tests
+    command: |
+      if command -v pytest &> /dev/null || python3 -m pytest --version &> /dev/null; then
+        python3 -m pytest --collect-only test-cases/tests 2>&1 | head -30
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
+          echo "✅ Pytest collection successful"
+        else
+          echo "⚠️ Pytest collection warnings (may be expected if pages not fully generated)"
+        fi
+      else
+        echo "⚠️ Pytest not available, skipping collection check"
+      fi
+    continue_on_error: true
+
+  - name: File Naming Validation
+    description: Ensure all files follow snake_case naming convention
+    command: |
+      violations=0
+      for file in test-cases/pages/*.py test-cases/tests/test_*.py; do
+        if [ -f "$file" ]; then
+          basename=$(basename "$file" .py)
+          if [[ ! "$basename" =~ ^[a-z][a-z0-9_]*$ ]]; then
+            echo "❌ Invalid naming: $file (should be snake_case)"
+            violations=$((violations + 1))
+          fi
+        fi
+      done
+      
+      if [ $violations -eq 0 ]; then
+        echo "✅ All files follow snake_case naming"
+      else
+        echo "⚠️ Found $violations naming violations"
+      fi
+    continue_on_error: true
+
+  - name: Structure Validation
+    description: Verify POM structure requirements
+    command: |
+      python3 << 'EOF'
+      import os
+      import sys
+      
+      issues = []
+      
+      # Check BasePage exists
+      base_page = "test-cases/pages/base_page.py"
+      if not os.path.exists(base_page):
+          issues.append("❌ BasePage not found")
+      
+      # Check ConfigManager exists
+      config_manager = "test-cases/utils/config_manager.py"
+      if not os.path.exists(config_manager):
+          issues.append("❌ ConfigManager not found")
+      
+      # Check config.json exists
+      config_json = "test-cases/config/config.json"
+      if not os.path.exists(config_json):
+          issues.append("❌ config.json not found")
+      
+      # Check for navigate() methods in page objects
+      pages_dir = "test-cases/pages"
+      if os.path.exists(pages_dir):
+          for file in os.listdir(pages_dir):
+              if file.endswith("_page.py") and file != "base_page.py":
+                  filepath = os.path.join(pages_dir, file)
+                  with open(filepath, 'r') as f:
+                      content = f.read()
+                      if "def navigate" not in content:
+                          issues.append(f"⚠️ {file} missing navigate() method")
+      
+      if issues:
+          for issue in issues:
+              print(issue)
+          sys.exit(1)
+      else:
+          print("✅ POM structure validated")
+      EOF
+    continue_on_error: false
+
+  - name: Assertion Placement Check
+    description: Verify assertions are in test files, not page objects
+    command: |
+      python3 << 'EOF'
+      import os
+      import re
+      
+      violations = []
+      
+      # Check page objects don't have excessive expect() calls
+      pages_dir = "test-cases/pages"
+      if os.path.exists(pages_dir):
+          for file in os.listdir(pages_dir):
+              if file.endswith("_page.py") and file != "base_page.py":
+                  filepath = os.path.join(pages_dir, file)
+                  with open(filepath, 'r') as f:
+                      content = f.read()
+                      # Count expect() calls in page objects (should be minimal)
+                      expect_count = len(re.findall(r'expect\(', content))
+                      if expect_count > 2:  # Allow max 2 for critical checkpoints
+                          violations.append(f"⚠️ {file} has {expect_count} expect() calls (consider moving to test files)")
+      
+      # Check test files have assertions
+      tests_dir = "test-cases/tests"
+      if os.path.exists(tests_dir):
+          has_assertions = False
+          for file in os.listdir(tests_dir):
+              if file.startswith("test_") and file.endswith(".py"):
+                  filepath = os.path.join(tests_dir, file)
+                  with open(filepath, 'r') as f:
+                      content = f.read()
+                      if "expect(" in content:
+                          has_assertions = True
+                          break
+          
+          if not has_assertions:
+              violations.append("⚠️ Test files should contain assertions for outcomes")
+      
+      if violations:
+          for v in violations:
+              print(v)
+      else:
+          print("✅ Assertion placement validated")
+      EOF
+    continue_on_error: true
+
+  - name: Summary Report
+    description: Generate validation summary
+    command: |
+      echo ""
+      echo "📊 Validation Summary"
+      echo "===================================="
+      echo ""
+      echo "Files Generated:"
+      echo "  Pages: $(ls -1 test-cases/pages/*_page.py 2>/dev/null | wc -l | tr -d ' ')"
+      echo "  Tests: $(ls -1 test-cases/tests/test_*.py 2>/dev/null | wc -l | tr -d ' ')"
+      echo "  Utils: $(ls -1 test-cases/utils/*.py 2>/dev/null | wc -l | tr -d ' ')"
+      echo ""
+      echo "✅ Validation pipeline completed"
+    continue_on_error: true
+
+on_success:
+  message: "✅ All validation checks passed"
+  actions:
+    - log_success
+
+on_failure:
+  message: "❌ Validation failed - check logs above"
+  actions:
+    - log_error
+    - suggest_fixes
+
